@@ -14,28 +14,33 @@ class ImageTransformer:
         self.cam_frame = cfg.cam_frame
         self.fps = cfg.fps
 
+        self.hue_range = cfg.hue_range
+        self.saturation_range = cfg.saturation_range
+        self.contrast_range = cfg.contrast_range
+        self.brightness_range = cfg.brightness_range
+
         self.hue_change_param = 0
         self.saturation_change_param = 1.0
         self.contrast_change_param = 1.0
         self.brightness_change_param = 1.0
 
     def on_hue_change(self, val):
-        p_min, p_max = 0, 360
+        p_min, p_max = self.hue_range
         self.hue_change_param = (p_max - p_min) * (val / 100) + p_min
 
     def on_saturation_change(self, val):
-        p_min, p_max = 0, 1
+        p_min, p_max = self.saturation_range
         self.saturation_change_param = p_max - (p_max - p_min) * (val / 100) + p_min
 
     def on_contrast_change(self, val):
-        p_min, p_max = 0, 1
+        p_min, p_max = self.contrast_range
         self.contrast_change_param = p_max - (p_max - p_min) * (val / 100) + p_min
 
     def on_brightness_change(self, val):
-        p_min, p_max = 0, 1
+        p_min, p_max = self.brightness_range
         self.brightness_change_param = p_max - (p_max - p_min) * (val / 100) + p_min
 
-    def sorted_points(self):
+    def points_preprocessing(self):
         """
         In my implementation, the points specified in the installation order
         are transferred to the points of the region
@@ -56,7 +61,7 @@ class ImageTransformer:
 
     def bh_transform(self, frame):
         """bilinear homography transform"""
-        quad_before = self.sorted_points()
+        quad_before = self.points_preprocessing()
         quad_after = np.array(
             [[0, 0],
              [self.transform_size[0] - 1, 0],
@@ -112,7 +117,7 @@ class ImageTransformer:
             elif len(self.points) == 0:
                 cv2.destroyWindow("Transformed")
 
-            key = cv2.waitKey(1) & 0xFF
+            key = cv2.waitKey(100) & 0xFF
             if key == ord('q'):
                 break
 
@@ -125,16 +130,13 @@ class ImageTransformer:
         return dst_img
 
     def adjust_contrast(self, frame, gamma):
-        frame = frame.astype(np.float32)
         Y = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
         mu = Y.mean()
         dst_float = gamma * frame + (1 - gamma) * mu
-        dst_img = np.clip(dst_float, 0, 255).astype(np.uint8)
+        dst_img = dst_float.astype(np.uint8)
         return dst_img
 
     def adjust_saturation(self, frame, beta):
-        frame = frame.astype(np.float32)
-
         B, G, R = cv2.split(frame)
 
         Y = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -145,13 +147,13 @@ class ImageTransformer:
 
         dst_float = cv2.merge([B, G, R])
 
-        dst_img = np.clip(dst_float, 0, 255).astype(np.uint8)
+        dst_img = dst_float.astype(np.uint8)
 
         return dst_img
 
     def adjust_hue(self, frame, alpha):
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV).astype(np.float32)
-        hsv[:, :, 0] = (hsv[:, :, 0] + alpha) % 360
+        hsv[:, :, 0] = np.remainder(hsv[:, :, 0] + alpha, 180)
         return cv2.cvtColor(hsv.astype(np.uint8), cv2.COLOR_HSV2BGR)
 
 

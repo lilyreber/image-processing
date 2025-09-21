@@ -4,3 +4,7 @@ homework_01:
   transform_size: [300, 300]
   cam_frame: [640, 480]
   fps: 15
+  hue_range: [0, 179]
+  saturation_range: [0, 1]
+  contrast_range: [0, 1]
+  brightness_range: [0, 1]
