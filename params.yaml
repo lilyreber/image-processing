@@ -1,0 +1,6 @@
+homework_01:
+  color: [148, 24, 248]          # RGB цвет точки
+  radius:  5                     # размеры точки
+  transform_size: [300, 300]
+  cam_frame: [640, 480]
+  fps: 15
