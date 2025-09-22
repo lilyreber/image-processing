@@ -63,11 +63,13 @@ class ImageTransformer:
         """bilinear homography transform"""
         quad_before = self.points_preprocessing()
         quad_after = np.array(
-            [[0, 0],
-             [self.transform_size[0] - 1, 0],
-             [self.transform_size[0] - 1, self.transform_size[1] - 1],
-             [0, self.transform_size[1] - 1]],
-            dtype=np.float32
+            [
+                [0, 0],
+                [self.transform_size[0] - 1, 0],
+                [self.transform_size[0] - 1, self.transform_size[1] - 1],
+                [0, self.transform_size[1] - 1],
+            ],
+            dtype=np.float32,
         )
 
         H = cv2.getPerspectiveTransform(quad_before, quad_after)
@@ -86,9 +88,15 @@ class ImageTransformer:
 
     def create_trackbars(self):
         cv2.createTrackbar("Hue", "Image Transform", 0, 100, self.on_hue_change)
-        cv2.createTrackbar("Saturation", "Image Transform", 0, 100, self.on_saturation_change)
-        cv2.createTrackbar("Contrast", "Image Transform", 0, 100, self.on_contrast_change)
-        cv2.createTrackbar("Brightness", "Image Transform", 0, 100, self.on_brightness_change)
+        cv2.createTrackbar(
+            "Saturation", "Image Transform", 0, 100, self.on_saturation_change
+        )
+        cv2.createTrackbar(
+            "Contrast", "Image Transform", 0, 100, self.on_contrast_change
+        )
+        cv2.createTrackbar(
+            "Brightness", "Image Transform", 0, 100, self.on_brightness_change
+        )
 
     def main(self):
         cam = cv2.VideoCapture(0)
@@ -111,14 +119,13 @@ class ImageTransformer:
             cv2.imshow("Image Transform", display_frame)
 
             if len(self.points) == 4:
-                transformed = self.cj_augmentation(
-                    self.bh_transform(frame))
+                transformed = self.cj_augmentation(self.bh_transform(frame))
                 cv2.imshow("Transformed", transformed)
             elif len(self.points) == 0:
                 cv2.destroyWindow("Transformed")
 
             key = cv2.waitKey(100) & 0xFF
-            if key == ord('q'):
+            if key == ord("q"):
                 break
 
         cam.release()
