@@ -1,0 +1,12 @@
+numpy
+scipy
+pandas
+opencv-python
+scikit-learn
+ipykernel
+jupyterlab
+matplotlib
+plotly
+omegaconf
+isort
+ruff
