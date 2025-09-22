@@ -159,8 +159,8 @@ class ImageTransformer:
         return dst_img
 
     def adjust_hue(self, frame, alpha):
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV).astype(np.float32)
-        hsv[:, :, 0] = np.remainder(hsv[:, :, 0] + alpha, 180)
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV_FULL).astype(np.float32)
+        hsv[:, :, 0] = np.remainder(hsv[:, :, 0] + alpha, 360)
         return cv2.cvtColor(hsv.astype(np.uint8), cv2.COLOR_HSV2BGR)
 
 
