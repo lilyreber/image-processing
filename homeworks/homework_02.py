@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 from omegaconf import OmegaConf
 
+
 class Filter:
     def __init__(self, cfg):
         self.mask_H = None
@@ -16,27 +17,32 @@ class Filter:
     def apply_filter(self, image):
         F = np.fft.fft2(image)
         F = np.fft.fftshift(F)
-        abs_F = np.abs(F)
+        abs_F, angle_F = np.abs(F), np.angle(F)
 
         M = np.ones(image.shape, dtype=np.complex128)
 
         h, w = image.shape
-        center_h, center_w = h // 2, w // 2
-        start_u = max(0, center_h - self.mask_H)
-        end_u = min(h, center_h + self.mask_H)
+        center_w = h // 2
         start_v = max(0, center_w - self.mask_W)
         end_v = min(w, center_w + self.mask_W)
 
-        M[start_u:end_u, start_v:end_v] = 0
+        M[0 : self.mask_H, start_v:end_v] = 0
 
-        mask_on_F = F * M
+        M[h - self.mask_H : h, start_v:end_v] = 0
+
+        mask_on_F = abs_F * M * np.exp(1j * angle_F)
+
         mask_on_abs_F = abs_F * M
 
         g = np.fft.ifft2(np.fft.ifftshift(mask_on_F))
         transformed_image = np.real(g)
-        transformed_image_normalized = cv2.normalize(transformed_image, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+        transformed_image_normalized = cv2.normalize(
+            transformed_image, None, 0, 255, cv2.NORM_MINMAX
+        ).astype(np.uint8)
 
-        spectrum = cv2.normalize(np.log(1 + np.real(mask_on_abs_F)), None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+        spectrum = cv2.normalize(
+            np.log(1 + np.real(mask_on_abs_F)), None, 0, 255, cv2.NORM_MINMAX
+        ).astype(np.uint8)
 
         return transformed_image_normalized, spectrum
 
