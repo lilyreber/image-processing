@@ -8,3 +8,7 @@ homework_01:
   saturation_range: [0, 1]
   contrast_range: [0, 1]
   brightness_range: [0, 1]
+
+homework_02:
+  image_path: 'data/saturn_rings.png'
+
