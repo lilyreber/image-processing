@@ -32,3 +32,14 @@ homework_04:
   # Output images
   output_image: data/line_ransac.jpg
   output_edges: data/marr_hildreth_edges.jpg
+
+homework_05:
+    # SuperPoint model pretrained weights
+    superpoint_weights: data/superpoint.pth
+    # Cross-Check Matching distance threshold
+    T: 0.7
+    # Input images
+    input_image_1: data/brandenburg_gate_1.jpg
+    input_image_2: data/brandenburg_gate_2.jpg
+    # Output image
+    output_image: data/sp_matches.jpg
