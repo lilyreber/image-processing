@@ -37,7 +37,8 @@ def project_points(points3D, P):
 def from_image_coordinates_to_world(x, y, c, P):
     P_plus = P.T @ np.linalg.inv(P @ P.T)
     point3D = P_plus @ np.array([x, y, 1])
-    point3D = point3D / point3D[3]
     t = -point3D[1] / c[1]
     point3D = point3D + t * np.hstack([c, 1])
+    point3D = point3D[:3] / point3D[3]
+
     return point3D
