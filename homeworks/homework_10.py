@@ -47,7 +47,6 @@ class Config:
 
 
 def main(cfg):
-    print('')
     image = cv2.cvtColor(cv2.imread(cfg.image_file), cv2.COLOR_BGR2GRAY)
     video = cv2.VideoCapture(cfg.video_file)
 
