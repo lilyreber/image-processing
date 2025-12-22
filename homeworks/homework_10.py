@@ -50,16 +50,7 @@ def main(cfg):
     image = cv2.cvtColor(cv2.imread(cfg.image_file), cv2.COLOR_BGR2GRAY)
     video = cv2.VideoCapture(cfg.video_file)
 
-
-    keypoints, descriptors = cfg.detector.detectAndCompute(image, None)
-    kp_coords = np.array([kp.pt for kp in keypoints], dtype=np.float32)
-
-    points_3d = np.column_stack((
-                    kp_coords[:, 0], 
-                    kp_coords[:, 1],  
-                    np.zeros(len(kp_coords), dtype=np.float32)
-                ))
-    
+    keypoints, descriptors = cfg.detector.detectAndCompute(image, None)    
 
     while True:
         ok, image = video.read()
@@ -75,7 +66,7 @@ def main(cfg):
         pts = np.array([keypoints[m.queryIdx].pt for m in matches])
         frame_pts = np.array([frame_keypoints[m.trainIdx].pt for m in matches])
         
-        H, mask = cv2.findHomography(pts, frame_pts, method=cv2.RANSAC)
+        _, mask = cv2.findHomography(pts, frame_pts, method=cv2.RANSAC)
         matches = [m for m, inliner in zip(matches, mask.ravel()) if inliner]
 
         pts = np.array([keypoints[m.queryIdx].pt for m in matches])
